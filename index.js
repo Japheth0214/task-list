@@ -49,6 +49,7 @@ function DisplayTodos () {
 		const actions = document.createElement('div');
 		const edit = document.createElement('button');
 		const deleteButton = document.createElement('button');
+		const updateButton = document.createElement('button'); // Added update button
   
 		input.type = 'checkbox';
 		input.checked = todo.done;
@@ -62,15 +63,18 @@ function DisplayTodos () {
 		actions.classList.add('actions');
 		edit.classList.add('edit');
 		deleteButton.classList.add('delete');
+		updateButton.classList.add('update'); // Added update button
 
 		content.innerHTML = `<input type="text" value="${todo.content}" readonly>`;
 		edit.innerHTML = 'Edit';
 		deleteButton.innerHTML = 'Delete';
+		updateButton.innerHTML = 'Update'; // Added update button
 
 		label.appendChild(input);
 		label.appendChild(span);
 		actions.appendChild(edit);
 		actions.appendChild(deleteButton);
+		actions.appendChild(updateButton); // Added update button
 		todoItem.appendChild(label);
 		todoItem.appendChild(content);
 		todoItem.appendChild(actions);
@@ -92,21 +96,46 @@ function DisplayTodos () {
 			}
 
 			DisplayTodos()
-
 		})
 
-		edit.addEventListener('click', (e) => {
-			const input = content.querySelector('input');
-			input.removeAttribute('readonly');
-			input.focus();
-			input.addEventListener('blur', (e) => {
-				input.setAttribute('readonly', true);
-				todo.content = e.target.value;
-				localStorage.setItem('todos', JSON.stringify(todos));
-				DisplayTodos()
+		const editButtonState = {
+            isEditing: false,
+            originalContent: todo.content,
+        };
 
-			})
-		})
+edit.addEventListener('click', () => {
+    const input = content.querySelector('input');
+    
+    if (!editButtonState.isEditing) {
+        // Switch to edit mode
+        input.removeAttribute('readonly');
+        input.focus();
+
+        // Get the length of the input value
+        const inputValueLength = input.value.length;
+
+        // Set the cursor position to the end of the text
+        input.setSelectionRange(inputValueLength, inputValueLength);
+
+        edit.innerHTML = 'Update';
+        editButtonState.isEditing = true;
+    } else {
+        // Update the content and switch back to view mode
+        input.setAttribute('readonly', true);
+        todo.content = input.value;
+        localStorage.setItem('todos', JSON.stringify(todos));
+        DisplayTodos();
+
+        edit.innerHTML = 'Edit';
+        editButtonState.isEditing = false;
+    }
+});
+
+
+
+
+// ...
+
 
 		deleteButton.addEventListener('click', (e) => {
 			todos = todos.filter(t => t != todo);
