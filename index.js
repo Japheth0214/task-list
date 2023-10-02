@@ -12,24 +12,45 @@ window.addEventListener('load', () => {
 	})
 
 	newTodoForm.addEventListener('submit', e => {
-		e.preventDefault();
+    e.preventDefault();
 
-		const todo = {
-			content: e.target.elements.content.value,
-			category: e.target.elements.category.value,
-			done: false,
-			createdAt: new Date().getTime()
-		}
+    // Get the input values
+    const content = e.target.elements.content.value;
+    const category = e.target.elements.category.value;
 
-		todos.push(todo);
+    // Check if either the content or category is empty
+    if (!content.trim() || category === '') {
+        // Display the error message as a popup
+        const errorPopup = document.getElementById('error-popup');
+        errorPopup.textContent = 'Please enter both your task and pick a category';
+        errorPopup.style.display = 'block';
 
-		localStorage.setItem('todos', JSON.stringify(todos));
+        // Automatically hide the error message after 5 seconds
+        setTimeout(() => {
+            errorPopup.style.display = 'none';
+        }, 5000);
 
-		// Reset the form
-		e.target.reset();
+        return; // Prevent creating a new todo
+    }
 
-		DisplayTodos()
-	})
+    const todo = {
+        content,
+        category,
+        done: false,
+        createdAt: new Date().getTime()
+    }
+
+    todos.push(todo);
+
+    localStorage.setItem('todos', JSON.stringify(todos));
+
+    // Reset the form
+    e.target.reset();
+
+    DisplayTodos();
+})
+
+
 
 	DisplayTodos()
 })
@@ -63,7 +84,7 @@ function DisplayTodos () {
 		actions.classList.add('actions');
 		edit.classList.add('edit');
 		deleteButton.classList.add('delete');
-		updateButton.classList.add('update'); // Added update button
+		updateButton.classList.add('Update'); // Added update button
 
 		content.innerHTML = `<input type="text" value="${todo.content}" readonly>`;
 		edit.innerHTML = 'Edit';
